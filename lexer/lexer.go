@@ -36,9 +36,22 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.RBRACE, l.ch)
 	case 0:
 		tok = newToken(token.EOF, l.ch)
+	default:
+		if isLetter(l.ch) {
+			tok.Literal = l.readIdentifier()
+			tok.Type = token.LookupIdent(tok.Literal)
+			return tok
+		} else {
+			tok = newToken(token.ILLEGAL, l.ch)
+		}
 	}
 	l.readChar()
 	return tok
+}
+
+func isLetter(ch byte) bool {
+	return 'a' <= ch && ch <= 'z' || 'A' <= ch && ch <= 'Z' || ch == '_'
+
 }
 
 func newToken(tokenType token.Type, ch byte) token.Token {
@@ -53,4 +66,12 @@ func (l *Lexer) readChar() {
 	}
 	l.position = l.readPosition
 	l.readPosition++
+}
+
+func (l *Lexer) readIdentifier() string {
+	startPosition := l.position
+	for isLetter(l.ch) {
+		l.readChar()
+	}
+	return l.input[startPosition:l.position]
 }
