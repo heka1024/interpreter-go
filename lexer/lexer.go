@@ -9,7 +9,7 @@ type Lexer struct {
 	ch           byte // 현재 조사 중인 문자
 }
 
-func NewLexer(input string) *Lexer {
+func New(input string) *Lexer {
 	l := &Lexer{input: input}
 	l.readChar()
 	return l
