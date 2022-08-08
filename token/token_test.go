@@ -14,6 +14,11 @@ func TestLookupIdent(t *testing.T) {
 		{"let", LET},
 		{"five", IDENT},
 		{"ten", IDENT},
+		{"true", TRUE},
+		{"false", FALSE},
+		{"if", IF},
+		{"else", ELSE},
+		{"return", RETURN},
 	}
 	for _, tt := range tests {
 		t.Run(fmt.Sprintf("input: %s, want: %s", tt.input, tt.want), func(t *testing.T) {
