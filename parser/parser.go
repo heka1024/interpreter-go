@@ -93,5 +93,11 @@ func (p *Parser) curTokenIs(t token.Type) bool {
 }
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
-	return &ast.ReturnStatement{Token: p.curToken}
+	stmt := &ast.ReturnStatement{Token: p.curToken}
+	p.nextToken()
+	// TODO: 세미콜론 만날 때까지 건너뛰기
+	for !p.curTokenIs(token.SEMICOLON) {
+		p.nextToken()
+	}
+	return stmt
 }
