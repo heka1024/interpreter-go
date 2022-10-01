@@ -45,14 +45,11 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 }
 
 func evalBooleanInfixExpression(operator string, left object.Object, right object.Object) object.Object {
-	lValue := left.(*object.Boolean).Value
-	rValue := right.(*object.Boolean).Value
-
 	switch operator {
 	case "==":
-		return nativeBoolToBooleanObject(lValue == rValue)
+		return nativeBoolToBooleanObject(left == right)
 	case "!=":
-		return nativeBoolToBooleanObject(lValue != rValue)
+		return nativeBoolToBooleanObject(left != right)
 	default:
 		return NULL
 	}
