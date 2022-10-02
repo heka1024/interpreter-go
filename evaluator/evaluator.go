@@ -52,10 +52,24 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if object.IsError(val) {
 			return val
 		}
-
+		env.Set(node.Name.Value, val)
+	case *ast.Identifier:
+		return evalIdentifier(node, env)
 	}
 
 	return nil
+}
+
+func identifierNotFoundError(node *ast.Identifier) *object.Error {
+	return object.NewError("identifier not found: " + node.Value)
+}
+
+func evalIdentifier(node *ast.Identifier, env *object.Environment) object.Object {
+	val, ok := env.Get(node.Value)
+	if !ok {
+		return identifierNotFoundError(node)
+	}
+	return val
 }
 
 func evalBlockStatement(node *ast.BlockStatement, env *object.Environment) object.Object {
