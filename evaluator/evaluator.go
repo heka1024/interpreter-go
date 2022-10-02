@@ -83,7 +83,7 @@ func typeMismatchError(operator string, left object.Object, right object.Object)
 	return object.NewError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
 }
 
-func unknownOperatorError(operator string, left object.Object, right object.Object) *object.Error {
+func unknownInfixOperatorError(operator string, left object.Object, right object.Object) *object.Error {
 	return object.NewError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
 }
 
@@ -96,7 +96,7 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 	case left.Type() != right.Type():
 		return typeMismatchError(operator, left, right)
 	default:
-		return unknownOperatorError(operator, left, right)
+		return unknownInfixOperatorError(operator, left, right)
 	}
 }
 
@@ -107,7 +107,7 @@ func evalBooleanInfixExpression(operator string, left object.Object, right objec
 	case "!=":
 		return nativeBoolToBooleanObject(left != right)
 	default:
-		return unknownOperatorError(operator, left, right)
+		return unknownInfixOperatorError(operator, left, right)
 	}
 }
 
@@ -133,8 +133,12 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "!=":
 		return nativeBoolToBooleanObject(lValue != rValue)
 	default:
-		return unknownOperatorError(operator, left, right)
+		return unknownInfixOperatorError(operator, left, right)
 	}
+}
+
+func unknownPrefixOperatorError(operator string, right object.Object) *object.Error {
+	return object.NewError("unknown operator: %s%s", operator, right.Type())
 }
 
 func evalPrefixExpression(operator string, right object.Object) object.Object {
@@ -144,13 +148,13 @@ func evalPrefixExpression(operator string, right object.Object) object.Object {
 	case "-":
 		return evalMinusPrefixOperatorExpression(right)
 	default:
-		return NULL
+		return unknownPrefixOperatorError(operator, right)
 	}
 }
 
 func evalMinusPrefixOperatorExpression(right object.Object) object.Object {
 	if right.Type() != object.IntegerObj {
-		return NULL
+		return unknownPrefixOperatorError("-", right)
 	}
 	value := right.(*object.Integer).Value
 	return &object.Integer{Value: -value}
