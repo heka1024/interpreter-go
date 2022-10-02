@@ -79,14 +79,24 @@ func isTruthy(condition object.Object) bool {
 	}
 }
 
+func typeMismatchError(operator string, left object.Object, right object.Object) *object.Error {
+	return object.NewError("type mismatch: %s %s %s", left.Type(), operator, right.Type())
+}
+
+func unknownOperatorError(operator string, left object.Object, right object.Object) *object.Error {
+	return object.NewError("unknown operator: %s %s %s", left.Type(), operator, right.Type())
+}
+
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
 	switch {
 	case left.Type() == object.IntegerObj && right.Type() == object.IntegerObj:
 		return evalIntegerInfixExpression(operator, left, right)
 	case left.Type() == object.BooleanObj && right.Type() == object.BooleanObj:
 		return evalBooleanInfixExpression(operator, left, right)
+	case left.Type() != right.Type():
+		return typeMismatchError(operator, left, right)
 	default:
-		return NULL
+		return unknownOperatorError(operator, left, right)
 	}
 }
 
@@ -97,7 +107,7 @@ func evalBooleanInfixExpression(operator string, left object.Object, right objec
 	case "!=":
 		return nativeBoolToBooleanObject(left != right)
 	default:
-		return NULL
+		return unknownOperatorError(operator, left, right)
 	}
 }
 
@@ -123,7 +133,7 @@ func evalIntegerInfixExpression(operator string, left, right object.Object) obje
 	case "!=":
 		return nativeBoolToBooleanObject(lValue != rValue)
 	default:
-		return NULL
+		return unknownOperatorError(operator, left, right)
 	}
 }
 
