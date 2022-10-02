@@ -46,8 +46,11 @@ func evalBlockStatement(node *ast.BlockStatement) object.Object {
 	for _, statement := range node.Statements {
 		result = Eval(statement)
 
-		if result != nil && result.Type() == object.ReturnValueObj {
-			return result
+		if result != nil {
+			t := result.Type()
+			if t == object.ReturnValueObj || t == object.ErrorObj {
+				return result
+			}
 		}
 	}
 
@@ -188,6 +191,12 @@ func evalProgram(statements []ast.Statement) object.Object {
 
 		if returnValue, ok := result.(*object.ReturnValue); ok {
 			return returnValue.Value
+		}
+		switch result := result.(type) {
+		case *object.Error:
+			return result
+		case *object.ReturnValue:
+			return result.Value
 		}
 	}
 
