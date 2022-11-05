@@ -13,7 +13,6 @@ func IsError(object Object) bool {
 		return object.Type() == ErrorObj
 	}
 	return false
-
 }
 
 const (
