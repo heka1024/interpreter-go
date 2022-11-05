@@ -192,8 +192,21 @@ func evalInfixExpression(operator string, left, right object.Object) object.Obje
 		return evalIntegerInfixExpression(operator, left, right)
 	case left.Type() == object.BooleanObj && right.Type() == object.BooleanObj:
 		return evalBooleanInfixExpression(operator, left, right)
+	case left.Type() == object.StringObj && right.Type() == object.StringObj:
+		return evalStringInfixExpression(operator, left, right)
 	case left.Type() != right.Type():
 		return typeMismatchError(operator, left, right)
+	default:
+		return unknownInfixOperatorError(operator, left, right)
+	}
+}
+
+func evalStringInfixExpression(operator string, left object.Object, right object.Object) object.Object {
+	switch operator {
+	case "+":
+		leftVal := left.(*object.String).Value
+		rightVal := right.(*object.String).Value
+		return &object.String{Value: leftVal + rightVal}
 	default:
 		return unknownInfixOperatorError(operator, left, right)
 	}
